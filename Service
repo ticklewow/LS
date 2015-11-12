@@ -1,0 +1,83 @@
+  function repositoryBillingCharges(model, $http, $resource, $q) {
+        var billingChargesData = [];
+        var searchResult = [];
+
+        //get search result
+        var getSearchResult = function (mode, userName, sortPrimary, sortDirection, properties, tenants, portfolioManager, billingController, statusSelected, billedStatusSelected, chargeStatus, chargeGroup, chargeType, dateFrom, dateTo, billingId, gLCode, quickRef) {
+
+            var deferred = $q.defer();
+
+            var searchParams = { Mode: mode, Username : userName, SortPrimary: sortPrimary, SortDirection : sortDirection,
+                Property: properties, Tenant: tenants, PortfolioManager: portfolioManager, BillingController: billingController,
+                PropertyStatus: statusSelected, BilledStatus: billedStatusSelected, ChargeStatus: chargeStatus, ChargeGroup: chargeGroup, ChargeType: chargeType, DateFrom: dateFrom,
+                DateTo: dateTo, BillingId: billingId, GLCode: gLCode, QuickReference: quickRef };
+
+            $http({
+                url: '/pims/billingcharges/search',
+                method: 'POST',
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+                data: JSON.stringify(searchParams)
+            })
+                .then(function (results) {
+                    // Successful
+
+                    angular.copy(results.data, searchResult);
+
+                    deferred.resolve(results.data);
+                },
+                    function (error) {
+                        // Error
+                        deferred.reject(error);
+                    });
+
+            return deferred.promise;
+        };
+
+        //get billing charge record by id
+        var getById = function (id) {
+            var deferred = $q.defer();
+
+            $http({
+                url: '/pims/billingcharges/edit',
+                method: "GET",
+                params: { id: id }
+            })
+                 .then(function (results) {
+                     // Successful
+                     deferred.resolve(results.data);
+                 },
+                    function (error) {
+                        // Error
+                        deferred.reject(error);
+                    });
+
+            return deferred.promise;
+        };
+
+        //save
+        var save = function (billingCharges) {
+            var deferred = $q.defer();
+
+            $http.post("/pims/billingcharges/save", billingCharges)
+             .then(function (result) {
+                 // success
+                 deferred.resolve(result.data);
+             },
+             function (error) {
+                 // error
+                 deferred.reject(error);
+             });
+
+            return deferred.promise;
+        };
+
+
+        return {
+            billingChargesData: billingChargesData,
+            getSearchResult: getSearchResult,
+            searchResult: searchResult,
+            getById: getById,
+            save: save
+        };
+    };

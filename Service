@@ -1,3 +1,6 @@
+    angular.module('app').factory(serviceId, ['model', '$http', '$resource', '$q', repositoryBillingCharges]);
+
+
   function repositoryBillingCharges(model, $http, $resource, $q) {
         var billingChargesData = [];
         var searchResult = [];
